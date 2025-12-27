@@ -1,3 +1,5 @@
 .venv/
 .ipynb_checkpoints/
 model.pth
+.env
+xtts-streaming/checkpoints/xtts_v2
