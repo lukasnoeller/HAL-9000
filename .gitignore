@@ -2,4 +2,4 @@
 .ipynb_checkpoints/
 model.pth
 .env
-xtts-streaming/checkpoints/xtts_v2
+xtts-streaming/model/checkpoints/xtts_v2
