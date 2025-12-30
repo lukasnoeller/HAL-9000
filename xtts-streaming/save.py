@@ -10,7 +10,8 @@ def encode_audio(file_path):
         base64_string = base64.b64encode(binary_data).decode('utf-8')
         return base64_string
 
-url = "https://model-dq45k793.api.baseten.co/development/predict"
+url = "https://model-dq45k793.api.baseten.co/deployment/wglvy1v/predict"
+
 headers = {"Authorization": "Api-Key DaWmKDy1.Kyq337CfobGtl1Vyvt1XlCom8LsKDIzv"}
 file_path = os.path.join("..", "reference_audio_files", "HAL9000_Voice_noise_reduced.wav")
 encoded_audio_file = encode_audio(file_path)
@@ -29,22 +30,35 @@ print(f"Status Code: {resp.status_code}")
 print(f"Content Type: {resp.headers.get('Content-Type')}")
 
 if resp.status_code == 200:
-    data = resp.json()
+    # Open a wave file for writing
+        with wave.open("hal_9000_output.wav", "wb") as wf:
+            wf.setnchannels(channels)
+            wf.setsampwidth(sampwidth)
+            wf.setframerate(framerate)
+            
+            print("Downloading and writing chunks...")
+            for chunk in resp.iter_content(chunk_size=4096):
+                if chunk:
+                    # writeframes() appends data and updates the header length automatically
+                    wf.writeframes(chunk)
+                    
+        print(f"✅ Success! Saved as {os.path.abspath('hal_9000_output.wav')}")
+else:
+    print(f"❌ Error: {resp.status_code}")
+    print(resp.text)
     
     # Baseten usually puts the output in a key named 'model_output' or 'data'
     # Based on common XTTS deployments, it's often 'model_output'
-    try:
-        raw_audio_64 = data["output"]
+    # try:
+    #     raw_audio_64 = data["output"]
         
-        # Decode the Base64 string to bytes
-        audio_bytes = base64.b64decode(raw_audio_64)
+    #     # Decode the Base64 string to bytes
+    #     audio_bytes = base64.b64decode(raw_audio_64)
         
-        with open("hal_decoded.wav", "wb") as f:
-            f.write(audio_bytes)
-        print("Success! Saved as hal_decoded.wav")
+    #     with open("hal_decoded.wav", "wb") as f:
+    #         f.write(audio_bytes)
+    #     print("Success! Saved as hal_decoded.wav")
         
-    except KeyError:
-        print("Could not find audio key in JSON. Response keys were:")
-        print(data.keys())
-else:
-    print(f"Error {resp.status_code}: {resp.text}")
+    # except KeyError:
+    #     print("Could not find audio key in JSON. Response keys were:")
+    #     print(data.keys())
