@@ -7,8 +7,9 @@ external_package_dirs: []
 model_metadata: {}
 model_name: "XTTS v2 HAL"
 resources:
-  accelerator: H100
+  accelerator: A100
   cpu: '3'
   memory: 10Gi
   use_gpu: true
 secrets: {}
+requirements_file: requirements.txt

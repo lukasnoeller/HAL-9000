@@ -9,7 +9,17 @@ from TTS.tts.configs.xtts_config import XttsConfig
 from TTS.tts.models.xtts import Xtts
 from TTS.utils.generic_utils import get_user_data_dir
 from TTS.utils.manage import ModelManager
+import sys
+import pydantic
 
+# Check if we are running Pydantic V2
+if pydantic.VERSION.startswith("2"):
+    print("Detected Pydantic V2. Applying V1 compatibility shim for DeepSpeed/XTTS...")
+    from pydantic import v1 as pydantic_v1
+    
+    # This is the "magic" line: it tells Python that whenever any library 
+    # (like DeepSpeed) tries to 'import pydantic', it should get the V1 version.
+    sys.modules["pydantic"] = pydantic_v1
 # This is one of the speaker voices that comes with xtts
 SPEAKER_NAME = "Hal-9000"
 
@@ -22,18 +32,16 @@ class Model:
     def load(self):
         device = "cuda"
         model_name = "tts_models/multilingual/multi-dataset/xtts_v2"
-        # logging.info("⏳Downloading model")
         # ModelManager().download_model(model_name)
         # model_path = os.path.join(
         #     get_user_data_dir("tts"), model_name.replace("/", "--")
         # )
         # Get the path to the 'checkpoints' folder inside your Truss directory
         # 'model_module_dir' in Truss is usually where this script lives
-        model_path = os.path.join(os.path.dirname(__file__), "checkpoints/xtts_v2")
+        model_path = os.path.join("/app/data", "checkpoints/xtts_v2")
         config = XttsConfig()
         config.load_json(os.path.join(model_path, "config.json"))
         self.model = Xtts.init_from_config(config)
-        # self.model.load_checkpoint(config, checkpoint_dir=model_path, eval=True)
         logging.info("Loading model from disk...")
         self.model.load_checkpoint(
             config, checkpoint_dir=model_path, eval=True, use_deepspeed=True

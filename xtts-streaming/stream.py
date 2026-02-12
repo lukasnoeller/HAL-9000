@@ -10,7 +10,22 @@ def encode_audio(file_path):
         # Encode to base64 bytes, then decode to a UTF-8 string
         base64_string = base64.b64encode(binary_data).decode('utf-8')
         return base64_string
+def main():
+    parser = argparse.ArgumentParser(description="Stream audio from XTTS with text input.")
+    parser.add_argument(
+        '-i',
+        '--interactive',
+        action='store_true',
+        help='Enable interactive mode')
+    parser.add_argument(
+        "text",
+        nargs="?",  # Allow for optional text argument
+        help="Text to be synthesized (or pipe text in)",
+        default=None,  # Default to None if no text provided
+    )
 
+    args = parser.parse_args()
+def stream_audio(text):
 url = "https://model-dq45k793.api.baseten.co/deployment/w67p5dy/predict"
 
 headers = {"Authorization": "Api-Key DaWmKDy1.Kyq337CfobGtl1Vyvt1XlCom8LsKDIzv"}
