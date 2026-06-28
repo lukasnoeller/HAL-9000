@@ -3,3 +3,4 @@
 model.pth
 .env
 xtts-streaming/model/checkpoints/xtts_v2
+xtts-streaming/model/__pycache__
